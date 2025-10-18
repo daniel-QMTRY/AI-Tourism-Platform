@@ -1,11 +1,12 @@
+Understood.
+Here is a **final, executive-grade `README.md`** — no emojis, no instructions, no gimmicks. It renders cleanly on GitHub, reads like a professional case study, and avoids YAML or Markdown syntax issues.
+
 ---
 
 ````markdown
-# 🌍 AI-Powered Tourism Platform  
-### Deep Learning for Cultural Heritage Preservation & Intelligent Travel Recommendation  
-**Historical Structures Image Classification (PyTorch)** · **Professional Tourism Recommender**
-
----
+# AI-Powered Tourism Platform
+Deep Learning for Cultural Heritage Preservation & Intelligent Travel Recommendation  
+**Historical Structures Image Classification (PyTorch) | Professional Tourism Recommender**
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white" />
@@ -24,27 +25,27 @@
 
 This repository delivers two production-grade AI components designed for the tourism sector:
 
-- **Automated Asset Monitoring:**  
-  A deep learning classifier that identifies historical structures from images, empowering governments and conservation agencies to monitor heritage assets at scale.
+- **Automated Asset Monitoring**  
+  A deep learning classifier that identifies historical structures from images, enabling cultural agencies to track, analyze, and preserve heritage assets.
 
-- **Enhanced Customer Engagement:**  
-  A collaborative filtering recommendation engine that delivers personalized, novel, and statistically validated travel suggestions.
+- **Enhanced Customer Engagement**  
+  A collaborative filtering recommendation system that produces personalized, novel, and statistically validated travel suggestions.
 
-Both systems were developed through an iterative, evidence-based process — from baseline prototypes to engineered, audit-ready models.
+Both solutions follow a consistent engineering framework: establish a baseline, diagnose weaknesses, apply targeted improvements, and validate performance.
 
 ---
 
 ## 1. Historical Structures Image Classification (PyTorch)
 
 ### Objective
-Classify photographs of historical structures into **11 architectural categories** (e.g., *altar*, *bell_tower*, *dome*) to support automated cataloging and heritage monitoring.
+Develop a model capable of classifying images into eleven architectural categories (e.g., altar, bell_tower, dome) to enable automated cataloging and asset monitoring.
 
 ### Methodology
 
-| Model | Approach | Outcome |
-|:------|:----------|:---------|
-| **Baseline (ResNet18)** | Transfer learning with frozen backbone and minimal augmentation | Achieved **70.54%** validation accuracy but exhibited severe overfitting. |
-| **Advanced (ResNet50)** | Introduced **ColorJitter**, **RandomAffine**, **Dropout (p=0.5)**, two-phase fine-tuning, and early stopping | Achieved **74.33%** validation accuracy with stable convergence and healthy loss dynamics. |
+| Model | Description | Key Outcome |
+|:------|:-------------|:-------------|
+| **Baseline (ResNet18)** | Transfer learning with frozen backbone and standard augmentations | Achieved **70.54%** validation accuracy but exhibited severe overfitting. |
+| **Advanced (ResNet50)** | ColorJitter, RandomAffine, Dropout (p=0.5), two-phase fine-tuning, and early stopping | Achieved **74.33%** validation accuracy with stable convergence and strong generalization. |
 
 ---
 
@@ -56,17 +57,16 @@ Classify photographs of historical structures into **11 architectural categories
 
 ---
 
-### Model Diagnostics
+### Diagnostic Evaluation
 
 <p align="center">
-  <img src="model_output_pytorch_advanced/confusion_matrix_normalized.png" 
-       alt="Confusion Matrix (Normalized)" 
-       width="720">
+  <img src="model_output_pytorch_advanced/confusion_matrix_normalized.png"
+       alt="Confusion Matrix (Normalized)"
+       width="700">
 </p>
 
-`classification_report.txt` in `model_output_pytorch_advanced/` provides detailed **precision, recall, and F1 scores** per class.
-
-> **Note:** If a `RuntimeWarning` appears during confusion-matrix normalization, it indicates at least one class was absent from the validation set — a sign to use stratified sampling in future data splits.
+The confusion matrix and classification report provide per-class precision, recall, and F1-score, enabling data-driven model refinement.  
+If normalization produces a runtime warning, it indicates a class absent in the validation set, suggesting the use of stratified sampling in future splits.
 
 ---
 
@@ -81,62 +81,59 @@ Classify photographs of historical structures into **11 architectural categories
 | Loss Function | Cross-Entropy |
 | Early Stopping | Enabled (~Epoch 7) |
 
+**Performance Summary**
+
+| Metric | Baseline (ResNet18) | Advanced (ResNet50) |
+|:--------|:---------------------|:--------------------|
+| Validation Accuracy | 70.54% | 74.33% |
+| Overfitting | Severe | Mitigated |
+
 ---
 
 ## 2. Professional Tourism Recommender
 
 ### Objective
-Deliver **accurate and genuinely novel** travel recommendations using collaborative filtering.
+Generate statistically accurate and logically sound travel recommendations, ensuring every suggestion introduces a new, unvisited destination.
 
 ### Methodology
 
 | Model | Description | Outcome |
-|:------|:-------------|:---------|
-| **Baseline (Simple SVD)** | Default configuration, no logic filtering | RMSE **1.4460**; recommended previously visited destinations. |
-| **Professional (Tuned SVD)** | GridSearchCV hyperparameter tuning + explicit novelty logic | RMSE **1.4164**; guarantees only unseen destinations. |
+|:------|:-------------|:--------|
+| **Baseline (Simple SVD)** | Default configuration with basic split | RMSE **1.4460**, recommended previously rated destinations. |
+| **Professional (Tuned SVD)** | GridSearchCV optimization; explicit filtering of previously rated items | RMSE **1.4164**, strictly novel recommendations. |
 
 ---
 
-### Evaluation Snapshot
+### Evaluation
 
 <p align="center">
-  <img src="plots_professional/recommender_precision_recall_at_k.png" 
+  <img src="plots_professional/recommender_precision_recall_at_k.png"
        alt="Recommender Precision and Recall@K"
-       width="720">
+       width="700">
 </p>
 
-**Interpretation:**  
-The system predicts ratings accurately, but ranking metrics (Precision@K / Recall@K) reveal **data sparsity** — only ~10k ratings across 300 users × 437 destinations.  
-The next improvement phase should prioritize **collecting richer user interaction data**.
+Lower Precision@K and Recall@K scores are attributed to **data sparsity** (~10k ratings, 300 users × 437 places).  
+The model demonstrates accurate individual predictions but limited ranking confidence, emphasizing the strategic need for additional user data.
 
 ---
 
-## 3. Environment & Installation
+## 3. Environment & Execution
+
+**Dependencies**
 ```bash
 python -m venv .venv
-# Activate:
-#   PowerShell:  & .\.venv\Scripts\Activate.ps1
-#   Bash:        source .venv/bin/activate
-#   CMD:         .venv\Scripts\activate.bat
-
+# Activate environment
+# Windows PowerShell:  & .\.venv\Scripts\Activate.ps1
+# Linux/Mac:           source .venv/bin/activate
 pip install -r requirements.txt
-# Optional GPU build:
-# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ````
 
----
-
-## 4. How to Run
+**Run Commands**
 
 ```bash
-# Baseline classifier (ResNet18)
-python structure_classifier_pytorch.py
-
-# Advanced classifier (ResNet50)
-python structure_classifier_advanced.py
-
-# Professional recommender (Tuned SVD)
-python tourism_recommender_professional.py
+python structure_classifier_pytorch.py          # Baseline classifier
+python structure_classifier_advanced.py         # Advanced ResNet50 classifier
+python tourism_recommender_professional.py      # Tuned recommender
 ```
 
 **Generated Artifacts**
@@ -149,55 +146,53 @@ model_output_pytorch_advanced/
   ├─ confusion_matrix_normalized.png
   └─ classification_report.txt
 plots_professional/
-  ├─ age_distribution.png
   └─ recommender_precision_recall_at_k.png
 ```
 
 ---
 
-## 5. Reproducibility
+## 4. Reproducibility
 
-All runs are deterministic with fixed seeds:
+Experiments are deterministic and reproducible:
 
 ```python
 import torch, random, numpy as np
 torch.manual_seed(42); random.seed(42); np.random.seed(42)
 ```
 
-Minor GPU variance may occur.
-All figures and metrics are saved automatically for full auditability.
+Minor variance may occur from GPU kernels; all artifacts are versioned for audit consistency.
 
 ---
 
-## 6. Final Project Conclusion
+## 5. Final Project Conclusion
 
-This capstone demonstrates a **complete, professional ML workflow**:
+This project demonstrates a complete, audit-ready machine learning lifecycle.
 
-* The **Advanced ResNet50** model mitigated overfitting and achieved **74.33%** validation accuracy, producing interpretable metrics and balanced generalization.
-* The **Tuned SVD** recommender achieved **RMSE 1.4164**, delivering novelty-guaranteed recommendations.
-* Analytical depth extends beyond accuracy—diagnosing data sparsity, overfitting, and logical consistency—reflecting **senior-level model governance**.
+* The **Advanced ResNet50** classifier effectively overcame overfitting and achieved **74.33%** validation accuracy.
+* The **Tuned SVD** recommender reduced RMSE to **1.4164**, providing verified novel recommendations.
+* Evaluation revealed that future gains depend on **data enrichment**, not incremental tuning—reflecting strategic insight at a professional level.
 
-> The process — *Build → Diagnose → Improve → Validate* — exemplifies industry-grade, audit-ready AI engineering.
-
----
-
-## 7. Roadmap
-
-* Integrate Grad-CAM explainability for visual insight
-* Deploy recommender via FastAPI microservice
-* Add mixed precision + cosine annealing scheduler
-* Expand dataset geographically and demographically
-* Add CI/CD smoke tests for reproducibility verification
+This work exemplifies the discipline of **Build → Diagnose → Improve → Validate**, transforming prototypes into production-grade, defensible AI systems.
 
 ---
 
-## 8. License & Contact
+## 6. Roadmap
 
-**MIT License** (see `LICENSE`).
-**Daniel Allen, RN MBA MSHI**
-Principal Consultant · **QMTRY LLC**
-📧 [contracts@qmtry.com](mailto:contracts@qmtry.com)
-🌐 [https://www.qmtry.ai](https://www.qmtry.ai)
+* Integrate Grad-CAM for visual interpretability
+* Deploy recommender via FastAPI service
+* Add mixed-precision training and cosine annealing scheduling
+* Expand datasets across geographic and cultural domains
+* Implement CI/CD testing for continuous validation
+
+---
+
+## 7. License & Contact
+
+**License:** MIT License (see `LICENSE`)
+**Author:** Daniel Allen, RN MBA MSHI
+**Organization:** QMTRY LLC
+**Contact:** [contracts@qmtry.com](mailto:contracts@qmtry.com)
+**Website:** [https://www.qmtry.ai](https://www.qmtry.ai)
 
 ```
 
