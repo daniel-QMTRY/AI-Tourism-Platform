@@ -16,43 +16,29 @@ Historical Structures Image Classification (PyTorch) & Professional Tourism Reco
 ## Executive Summary
 This repository delivers two production-oriented ML components for the tourism sector:
 
-- **Asset Monitoring (CV):** a deep learning model that classifies historical structures from images, enabling scalable preservation workflows.
-- **Customer Engagement (RecSys):** a collaborative-filtering engine that produces personalized, **novel** travel suggestions with audited accuracy.
+- **Asset Monitoring (Computer Vision):** Classifies images of historical structures to support scalable preservation workflows.  
+- **Customer Engagement (Recommender):** Generates personalized, **novel** travel suggestions with audited statistical accuracy.
 
 **Headline Results**
-- **Classifier:** Baseline ResNet18 overfit (**70.54%** val). Advanced ResNet50 with aggressive augmentation, dropout, two-phase fine-tuning, and early stopping reached **74.33%** with converging losses.
-- **Recommender:** Baseline SVD had **RMSE 1.4460** and suggested repeats. Tuned SVD achieved **RMSE 1.4164** and recommends **only new** places. Precision@K/Recall@K analysis revealed **data sparsity** as the ranking limiter—informing a data-collection roadmap.
-
----
-
-## Table of Contents
-1. Overview  
-2. Part 1 — Historical Structures Classification  
-3. Part 2 — Professional Tourism Recommender  
-4. Environment & Installation  
-5. How to Run  
-6. Repository Structure  
-7. Reproducibility Checklist  
-8. Final Project Conclusion  
-9. Roadmap  
-10. License & Contact
+- **Classifier:** Baseline ResNet18 validated feasibility but overfit (**70.54%** validation). An advanced ResNet50 with stronger augmentation, dropout, two-phase fine-tuning, and early stopping reached **74.33%** with converging losses.  
+- **Recommender:** Baseline SVD yielded **RMSE 1.4460** and suggested repeats. A tuned SVD achieved **RMSE 1.4164** and guarantees only new recommendations. Precision@K/Recall@K surfaces data sparsity as the main limiter for ranking quality.
 
 ---
 
 ## 1) Overview
 Two problems, one disciplined workflow: **baseline → diagnose → improve → validate**.
 
-- **Computer Vision:** multi-class classification into eleven architectural categories (e.g., altar, bell_tower, dome).  
-- **Recommendations:** logically sound, statistically accurate suggestions that explicitly exclude previously rated items.
+- **Computer Vision:** Multi-class classification across eleven architectural categories (e.g., altar, bell_tower, dome).  
+- **Recommendations:** Logically sound, statistically accurate suggestions that explicitly exclude previously rated items.
 
 ---
 
-## 2) Part 1 — Historical Structures Classification (PyTorch)
+## 2) Historical Structures Classification (PyTorch)
 
-### Challenge
-Classify images of historical structures into **11** categories to support automated cataloging and monitoring.
+### Problem
+Classify images of historical structures into **11** categories to enable automated cataloging and monitoring.
 
-**Dataset layout**
+**Expected dataset**
 ```
 
 <repo_root>/train/<class_name>/*.jpg
@@ -62,39 +48,34 @@ Classify images of historical structures into **11** categories to support autom
 ### Methodology
 
 **Baseline (ResNet18)**  
-Frozen backbone + new classifier head; standard augmentation.  
-**Result:** **70.54%** validation accuracy; validation loss diverges while training loss falls → **overfitting**.
+Frozen backbone + new linear head; standard augmentation.  
+**Result:** **70.54%** validation accuracy with classic overfitting (validation loss diverges).
 
 **Advanced (ResNet50)**  
-ColorJitter + RandomAffine; Dropout (p=0.5).  
-Two-phase fine-tuning (train head → unfreeze `layer3`/`layer4` at lower LR).  
-Early stopping to capture the best epoch.  
-**Result:** **74.33%** validation accuracy; train/val losses track closely.
+ColorJitter + RandomAffine; Dropout (p=0.5); two-phase fine-tuning (head → unfreeze `layer3`/`layer4` at lower LR); early stopping.  
+**Result:** **74.33%** validation accuracy; training/validation curves track closely.
 
-### Performance Figures
+### Training Curves
 
 | Baseline (ResNet18)                                                                 | Advanced (ResNet50)                                                                      |
 |:------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------|
-| ![Baseline: Training vs Validation](model_output_pytorch/training_performance_plots_pytorch.png) | ![Advanced: Training vs Validation](model_output_pytorch_advanced/training_performance_plots_advanced.png) |
+| ![Baseline](model_output_pytorch/training_performance_plots_pytorch.png)           | ![Advanced](model_output_pytorch_advanced/training_performance_plots_advanced.png)       |
 
-**Advanced Evaluation (post-training)**
-
-- Normalized confusion matrix and full per-class report:
+### Post-Training Diagnostics
 
 <p align="left">
   <img src="model_output_pytorch_advanced/confusion_matrix_normalized.png"
        alt="Confusion Matrix (Normalized)"
-       width="720">
+       width="760">
 </p>
 
-The text report `model_output_pytorch_advanced/classification_report.txt` provides per-class precision/recall/F1 for targeted remediation.
-
-> **Note on warnings:** If a `RuntimeWarning` appears during normalization, at least one class has zero samples in the validation split. Use **stratified sampling** in future splits.
+A per-class precision/recall/F1 report is saved at:
+`model_output_pytorch_advanced/classification_report.txt`.
 
 ### Configuration
 - PyTorch 2.5.x (+ cu121), 150×150 images, batch 32  
-- Optimizer: Adam (head only; reduced LR when unfreezing)  
-- Loss: Cross-Entropy, up to 50 epochs (**early stop ≈ epoch 7**)
+- Optimizer: Adam (head only; reduced LR for unfrozen layers)  
+- Loss: Cross-Entropy, up to 50 epochs (early stop ≈ epoch 7)
 
 **Key metrics**
 
@@ -105,28 +86,26 @@ The text report `model_output_pytorch_advanced/classification_report.txt` provid
 
 ---
 
-## 3) Part 2 — Professional Tourism Recommender
+## 3) Professional Tourism Recommender
 
-### Challenge
+### Problem
 Deliver **novel**, high-quality recommendations using collaborative filtering.
 
 ### Methodology
 
 **Baseline (Simple SVD)**  
-Default configuration on a basic split.  
-**Issues:** **RMSE 1.4460**; recommended already-rated items.
+Default configuration; basic split.  
+**Issues:** **RMSE 1.4460**; recommended previously rated items.
 
 **Professional (Tuned SVD)**  
-GridSearchCV over epochs/LR/regularization; strict logic to exclude all previously rated items.  
-**Result:** **RMSE 1.4164**; output is **strictly new** to the user.
+GridSearchCV over epochs/LR/regularization; strict novelty filter excluding all previously rated items.  
+**Result:** **RMSE 1.4164** with strictly new recommendations.
 
-### Evaluation Figures
+### Ranking Quality
 
-- **Precision@K / Recall@K** (holdout evaluation; relevant ≥ 4 stars):
+![Precision/Recall@K](plots_professional/recommender_precision_recall_at_k.png)
 
-![Recommender Precision/Recall@K](plots_professional/recommender_precision_recall_at_k.png)
-
-**Interpretation:** Low P@K/R@K reflects **data sparsity** (∼10k ratings; ~300 users × 437 places). With a sparse user-item matrix, ranking confidence suffers even when single-rating RMSE is strong—guiding investment toward **collecting more ratings**, not micro-tuning hyperparameters.
+Interpretation: lower P@K/R@K scores primarily reflect **data sparsity** (∼10k ratings across ~300 users × 437 places). Improving ranking confidence depends more on collecting additional ratings than on marginal model tweaks.
 
 ---
 
@@ -141,9 +120,6 @@ pip install -r requirements.txt
 
 # Optional GPU build (PyTorch wheels):
 # pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-# Verify CUDA
-# python -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ````
 
 ---
@@ -154,7 +130,7 @@ pip install -r requirements.txt
 # Baseline classifier (ResNet18)
 python structure_classifier_pytorch.py
 
-# Advanced classifier (ResNet50: dropout, fine-tuning, early stopping)
+# Advanced classifier (ResNet50 with dropout, fine-tuning, early stopping)
 python structure_classifier_advanced.py
 
 # Tourism recommender (tuned SVD)
@@ -197,41 +173,39 @@ plots_professional/
 
 ---
 
-## 7) Reproducibility Checklist
-
-* Deterministic validation split via `random_split`; prefer **stratified** splits for balanced class presence.
-* Recommended seeds:
+## 7) Reproducibility
 
 ```python
 import torch, random, numpy as np
 torch.manual_seed(42); random.seed(42); np.random.seed(42)
 ```
 
-* Minor variance may occur due to GPU kernels; artifacts are saved programmatically.
+Minor variance may occur due to GPU kernels. All artifacts are saved for auditability.
 
 ---
 
 ## 8) Final Project Conclusion
 
-This initiative delivered two robust systems:
+The initiative delivered two robust, production-minded systems:
 
-* **Part 1 (CV):** The advanced ResNet50 eliminated overfitting and improved validation accuracy to **74.33%**. Confusion-matrix and per-class metrics provide granular diagnostics to guide dataset and labeling improvements.
-* **Part 2 (RecSys):** The tuned SVD lowered error to **1.4164 RMSE** and enforces **novelty**. Precision@K/Recall@K uncovered **data sparsity** as the dominant limiter—pointing to a data-collection strategy as the high-leverage next step.
+* **CV:** The advanced ResNet50 eliminated overfitting and improved validation accuracy to **74.33%**. Confusion-matrix and per-class metrics provide actionable diagnostics for data and labeling improvements.
+* **RecSys:** The tuned SVD reduced error to **1.4164 RMSE** and enforces **novelty**. Precision@K/Recall@K identified **data sparsity** as the dominant limiter, guiding a data-collection roadmap as the highest-leverage next step.
 
-This is a mature workflow: **Build → Diagnose → Improve → Critically Analyze**, converting prototypes into defensible, decision-ready systems.
+This is a mature workflow—**Build → Diagnose → Improve → Critically Analyze**—turning prototypes into decision-ready systems.
 
 ---
 
 ## 9) Roadmap
 
-Grad-CAM interpretability; FastAPI microservice for the recommender; weight decay + cosine annealing + mixed precision; stratified splits and dataset expansion; CI smoke tests and artifact publishing.
+Grad-CAM interpretability; FastAPI microservice; weight decay + cosine annealing + mixed precision; stratified splits and dataset expansion; CI smoke tests and artifact publishing.
 
 ---
 
 ## 10) License & Contact
 
-MIT License (see `LICENSE`).
-Daniel Allen — QMTRY LLC — [contracts@qmtry.com](mailto:contracts@qmtry.com) — [https://www.qmtry.ai](https://www.qmtry.ai)
+**MIT License** (see `LICENSE`).
+**Daniel Allen — QMTRY LLC**
+[contracts@qmtry.com](mailto:contracts@qmtry.com) · [https://www.qmtry.ai](https://www.qmtry.ai)
 
-````
-
+```
+```
