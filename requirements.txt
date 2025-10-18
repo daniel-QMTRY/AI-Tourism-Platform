@@ -1,0 +1,12 @@
+# ============================================
+# Historical Structures Image Classification
+# Capstone Project (PyTorch)
+# ============================================
+
+torch>=2.3.0
+torchvision>=0.18.0
+torchaudio>=2.3.0
+matplotlib>=3.8.0
+numpy>=1.26.0
+pillow>=10.0.0
+tqdm>=4.66.0

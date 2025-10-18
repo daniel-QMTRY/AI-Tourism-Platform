@@ -1,0 +1,35 @@
+# --- Environments / build artifacts ---
+.venv/
+env/
+venv/
+synthea_ai/          # your local venv with site-packages
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# --- Raw data (do not version large datasets) ---
+train/
+data_sets/
+images/
+
+# --- Model binaries ---
+*.pth
+*.pt
+*.onnx
+
+# --- Outputs: keep only PNGs (plots), ignore heavy binaries ---
+model_output_pytorch/*
+!model_output_pytorch/*.png
+
+model_output_pytorch_advanced/*
+!model_output_pytorch_advanced/*.png
+
+plots_professional/*
+!plots_professional/*.png
+
+# --- OS/IDE noise ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
