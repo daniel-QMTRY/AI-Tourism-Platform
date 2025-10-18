@@ -1,5 +1,3 @@
----
-
 # AI-Powered Tourism Platform: Where History Meets Wanderlust
 
 Historical Structures Image Classification (PyTorch) & Professional Tourism Recommender
