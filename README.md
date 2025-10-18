@@ -1,138 +1,196 @@
-# AI-Powered Tourism Platform
-Historical Structures Image Classification (PyTorch) & Professional Tourism Recommender
+AI-Powered Tourism Platform: Where History Meets Wanderlust
 
-![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
-![PyTorch 2.5](https://img.shields.io/badge/PyTorch-2.5-EE4C2C?logo=pytorch&logoColor=white)
-![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-76B900?logo=nvidia&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-2.x-150458?logo=pandas&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-1.26+-013243?logo=numpy&logoColor=white)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-3.8+-11557C)
-![scikit-surprise](https://img.shields.io/badge/scikit--surprise-1.1.4-FF9A00)
-![License: MIT](https://img.shields.io/badge/License-MIT-informational)
 
-## Executive Summary
-Two production-grade ML components for tourism:
+Executive Summary: Your Ticket to Smarter Tourism
+Welcome to the future of travel, where cutting-edge AI transforms how we preserve history and plan adventures. This repository is your backstage pass to two powerhouse ML components:
 
-- **Automated Asset Monitoring:** A CNN classifier recognizes historical structures from images, supporting cataloging and preservation.
-- **Enhanced Customer Engagement:** A collaborative-filtering recommender delivers personalized, *novel* suggestions with audited accuracy.
+Preserving the Past: A deep learning model that classifies images of historical structures with surgical precision, making asset monitoring a breeze.
+Inspiring the Future: A slick recommender system that serves up personalized travel suggestions so fresh, they’ll spark wanderlust in even the most seasoned globetrotter.
 
-**Results**
-- **Classifier:** Baseline ResNet18 reached **70.54%** validation accuracy but overfit. The advanced ResNet50 (aggressive augmentation, dropout, two-phase fine-tuning, early stopping) achieved **75.50%** with converging loss curves.
-- **Recommender:** Baseline SVD **RMSE 1.4460** and repeated items; tuned SVD with logic fix achieved **RMSE 1.4195** and guarantees only *new* recommendations.
+Key Wins:
 
-## Table of Contents
-1. Overview  
-2. Part 1: Historical Structures Classification  
-3. Part 2: Professional Tourism Recommender  
-4. Environment & Installation  
-5. How to Run  
-6. Repository Structure  
-7. Reproducibility Checklist  
-8. Roadmap  
-9. License & Contact
+Image Classifier: Our baseline ResNet18 laid the groundwork but stumbled with overfitting (70.54% val. accuracy). Enter ResNet50, armed with aggressive augmentation and fine-tuning wizardry, hitting a robust 75.50% accuracy with losses that play nice together.
+Recommender: The baseline SVD was a bit of a buzzkill (RMSE 1.4460, recommending déjà vu). Our tuned SVD flips the script with RMSE 1.4195 and only novel destinations.
 
-## 1) Overview
-- **Computer Vision:** Multi-class classification of architectural images into eleven categories.  
-- **Recommender Systems:** Logically sound, statistically accurate recommendations that exclude previously rated items.  
-Lifecycle: **baseline → diagnosis → targeted improvements → validation**.
 
-## 2) Part 1 — Historical Structures Classification (PyTorch)
-**Challenge.** Classify images into **11** categories (e.g., altar, bell_tower, dome).  
-**Dataset layout**
+Table of Contents
+
+Overview
+Part 1: Historical Structures Classification
+Part 2: Professional Tourism Recommender
+Environment & Installation
+How to Run
+Repository Structure
+Reproducibility Checklist
+Roadmap
+License & Contact
+
+
+Overview
+Think of this repo as your AI travel buddy: it’s got a sharp eye for history and a knack for suggesting your next adventure. We tackled two challenges with a streamlined workflow: baseline → diagnose → upgrade → validate. 
+
+Computer Vision: Classifies images into 11 architectural categories (think altars, domes, and bell towers) to automate cataloging and preservation.
+Recommendations: Delivers statistically tight, logically sound travel suggestions that won’t bore you with places you’ve already checked off.
+
+
+Part 1: Historical Structures Classification (PyTorch)
+The Mission
+Turn images of historical structures into tidy categories for scalable monitoring. From altars to vaults, we’re sorting 11 architectural classes with style.
+Dataset Layout:
 <repo_root>/train/<class_name>/*.jpg
 
-markdown
-Copy code
-
-**Baseline (ResNet18).** Frozen backbone + new head; standard augmentation.  
-Result: **70.54%** validation accuracy; validation loss diverges → overfitting.
-
-**Advanced (ResNet50).** ColorJitter + RandomAffine; Dropout p=0.5; two-phase fine-tuning (unfreeze `layer3`/`layer4` at lower LR); early stopping.  
-Result: **75.50%**; train/val losses decrease together; gap stable.
-
-**Config.** PyTorch 2.5.x (+cu121), 150×150 images, batch 32, Adam, CE loss, up to 50 epochs (early stop ~epoch 7).
-
-**Figures** (commit these paths):
+The Journey
+Baseline (ResNet18): We started with a frozen backbone and a fresh classifier head, spiced up with standard augmentation. It hit 70.54% validation accuracy but threw a tantrum with diverging losses—classic overfitting drama.
+Advanced (ResNet50): We brought in the big guns—ColorJitter, RandomAffine, Dropout (p=0.5), two-phase fine-tuning (unfreezing layer3/layer4 with a lower learning rate), and early stopping. The result? A cool 75.50% accuracy, with training and validation losses dancing in sync.
+Performance Visuals
 
 
 
-markdown
-Copy code
+Baseline (ResNet18)
+Advanced (ResNet50)
 
-## 3) Part 2 — Professional Tourism Recommender
-**Baseline SVD.** Default; **RMSE 1.4460**; recommended already-rated places.  
-**Tuned SVD.** GridSearchCV over epochs/LR/regularization; logic excludes rated items.  
-Result: **RMSE 1.4195** (−1.83%); output is strictly novel.
 
-**Comparative**
-| Feature | Baseline | Professional | Impact |
-|---|---:|---:|---|
-| RMSE | 1.4460 | **1.4195** | More precise |
-| Logic | Flawed | **Sound** | Guarantees novelty |
-| UX | Confusing | **Valuable** | Trustworthy |
 
-## 4) Environment & Installation
-```bash
+
+
+
+
+What’s the Story?
+
+Baseline: Training loss plummets, validation loss sulks → overfitting alert.
+Advanced: Losses converge like old friends, with a stable gap → generalization for the win.
+
+Tech Specs
+
+Framework: PyTorch 2.5.x (+ CUDA 12.1)
+Input: 150×150 images, batch size 32
+Optimizer: Adam (head-only initially; fine-tuning with reduced LR)
+Loss: Cross-Entropy, max 50 epochs (early stopping ~epoch 7)
+
+Metrics Snapshot:
+
+
+
+Metric
+Baseline (ResNet18)
+Advanced (ResNet50)
+Δ
+
+
+
+Validation Accuracy
+70.54%
+75.50%
++4.96 pts
+
+
+Overfitting
+Severe
+Mitigated
+—
+
+
+
+Part 2: Professional Tourism Recommender
+The Mission
+Craft travel recommendations that feel like a personal concierge, not a broken record. We’re talking novel destinations with pinpoint accuracy.
+The Journey
+Baseline (Simple SVD): Default settings, basic split. It clocked an RMSE of 1.4460 but kept suggesting places users already visited—yawn.
+Professional (Tuned SVD): We cranked up the charm with GridSearchCV over epochs, learning rate, and regularization, plus logic to banish previously rated spots. The result? RMSE 1.4195 (a 1.83% improvement) and recommendations that feel like a fresh adventure.
+Performance Snapshot
+
+
+
+Feature
+Baseline
+Professional
+Impact
+
+
+
+RMSE (error)
+1.4460
+1.4195
+More precise
+
+
+Rec. Logic
+Flawed
+Sound
+Guarantees novelty
+
+
+User Value
+Low
+High
+Trustworthy discovery
+
+
+Exploratory Data Analysis
+Check out this age distribution plot to get a vibe for our user base:
+
+Environment & Installation
+Ready to dive in? Set up your environment faster than you can pack a suitcase:
 python -m venv .venv
-.venv\Scripts\activate
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
-# Optional GPU build:
+# Optional GPU boost:
 # pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-5) How to Run
-bash
-Copy code
+# Verify CUDA:
+# python -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
+
+
+How to Run
+Launch your AI travel assistant with these commands:
 # Baseline classifier
 python structure_classifier_pytorch.py
-# Advanced classifier
+# Advanced classifier (ResNet50 with all the bells and whistles)
 python structure_classifier_advanced.py
 # Tourism recommender
 python tourism_recommender_professional.py
-Outputs:
 
-markdown
-Copy code
+Outputs:
 model_output_pytorch/*.png
 model_output_pytorch_advanced/*.png
 plots_professional/*.png
-6) Repository Structure
-bash
-Copy code
-.
-├─ README.md
-├─ requirements.txt
-├─ structure_classifier_pytorch.py
-├─ structure_classifier_advanced.py
-├─ tourism_recommender_professional.py
-├─ tourism_recommender.py
-├─ model_output_pytorch/                 # plots (png)
-├─ model_output_pytorch_advanced/        # plots (png)
-└─ plots_professional/                   # EDA (png)
-7) Reproducibility Checklist
-Fixed seeds recommended:
 
-python
-Copy code
+
+Repository Structure
+.
+├── README.md
+├── requirements.txt
+├── structure_classifier_pytorch.py
+├── structure_classifier_advanced.py
+├── tourism_recommender_professional.py
+├── tourism_recommender.py
+├── model_output_pytorch/
+├── model_output_pytorch_advanced/
+└── plots_professional/
+
+
+Reproducibility Checklist
+We’ve got your back for consistent results:
+
+Deterministic Splits: Using random_split with seeds:
+
 import torch, random, numpy as np
 torch.manual_seed(42); random.seed(42); np.random.seed(42)
-Deterministic split via random_split. Minor variance may occur due to GPU kernels. Artifacts are saved programmatically.
 
-8) Roadmap
-Grad-CAM interpretability; FastAPI service for the recommender; weight decay + cosine annealing + AMP; dataset expansion; CI smoke tests.
 
-9) License & Contact
-MIT License (see LICENSE).
-Daniel Allen — QMTRY LLC — contracts@qmtry.com — https://www.qmtry.ai
+Note: Minor GPU kernel variance may occur.
+Artifacts: Plots and weights (if saved) are programmatically generated.
 
-yaml
-Copy code
 
----
+Roadmap
+What’s next? Think of this as our travel itinerary:
 
-## Add `.gitattributes` (silence line-ending churn)
+Add Grad-CAM for visual explainability (because who doesn’t love a good heatmap?).
+Deploy the recommender as a FastAPI service for real-time wanderlust.
+Experiment with weight decay, cosine annealing, and AMP for extra pizzazz.
+Expand the dataset for even sharper models.
+Set up CI smoke tests to keep things smooth.
 
-Create `.gitattributes`:
 
-```gitattributes
-* text=auto
-*.py text eol=lf
-*.md text eol=lf
+License & Contact
+License: MIT (see LICENSE for details).Contact: Daniel Allen — QMTRY LLC — contracts@qmtry.com — https://www.qmtry.ai
+Let’s make history and travel unforgettable, one model at a time!
