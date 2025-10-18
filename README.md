@@ -1,5 +1,3 @@
-Here’s a polished, executive-ready **README.md** you can paste directly into your repo. It embeds your existing plots and anticipates the new evaluation figures (confusion matrix and Precision@K/Recall@K) using the exact paths created by the code I gave you.
-
 ---
 
 # AI-Powered Tourism Platform: Where History Meets Wanderlust
